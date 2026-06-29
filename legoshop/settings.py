@@ -97,3 +97,8 @@ STATICFILES_DIRS = [
 ]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# settings.py
+
+# Насильно заставляем WhiteNoise работать даже при DEBUG = True
+WHITENOISE_USE_FINDERS = True
