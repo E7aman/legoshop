@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # ВОТ ЭТОЙ СТРОКИ НЕ ХВАТАЛО!
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -74,9 +75,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'legoshop' / 'static']
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -87,18 +85,12 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 STATIC_URL = 'static/'
-
-# Вот этой строки у тебя скорее всего нет, или она закомментирована:
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Если у тебя есть папки со статикой внутри приложений, оставь это:
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # или как там у тебя называется общая папка статики
+    BASE_DIR / 'legoshop' / 'static'
 ]
 
+# Включаем WhiteNoise на максимум
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-# settings.py
-
-# Насильно заставляем WhiteNoise работать даже при DEBUG = True
 WHITENOISE_USE_FINDERS = True
