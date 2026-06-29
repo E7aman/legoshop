@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Register — LEGO Shop{% endblock %}
+{% block content %}
+<div class="form-centered">
+  <div class="form-card">
+    <div class="form-title">Create account</div>
+    <div class="form-subtitle">Join thousands of builders worldwide.</div>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="form-help">{{ field.help_text }}</div>{% endif %}
+        {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-dark btn-block" style="margin-top:0.5rem">Create Account</button>
+    </form>
+    <p style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--mid)">
+      Already have an account? <a href="{% url 'accounts:login' %}" style="color:var(--black);font-weight:600">Log in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

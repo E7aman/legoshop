@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}My Profile — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="profile-layout">
+    <div>
+      <div class="profile-card">
+        <div class="profile-card-head">
+          <div class="profile-avatar">{{ user.username|first|upper }}</div>
+          <div class="profile-name">{{ user.get_full_name|default:user.username }}</div>
+          <div class="profile-role">{{ user.get_role_display }}</div>
+        </div>
+        <div class="profile-card-body">
+          <a href="{% url 'accounts:profile' %}" class="profile-link active">Profile Settings</a>
+          <a href="{% url 'orders:order_history' %}" class="profile-link">Order History</a>
+          <a href="{% url 'catalog:index' %}" class="profile-link">Browse Catalog</a>
+          {% if user.is_shop_admin %}
+          <a href="{% url 'catalog:admin_product_list' %}" class="profile-link">Admin — Products</a>
+          <a href="{% url 'orders:admin_order_list' %}" class="profile-link">Admin — Orders</a>
+          <a href="{% url 'accounts:admin_users' %}" class="profile-link">Admin — Users</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="page-header" style="padding-top:0">
+        <h1>Profile Settings</h1>
+      </div>
+      <div class="form-card mb-3">
+        <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+          <div class="form-group">
+            <label>{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+          </div>
+          {% endfor %}
+          <button type="submit" class="btn btn-dark">Save Changes</button>
+        </form>
+      </div>
+
+      <h2 style="font-size:1.25rem;font-weight:800;margin-bottom:1rem">Recent Orders</h2>
+      {% if orders %}
+      <div class="table-card">
+        <table>
+          <thead><tr><th>#</th><th>Total</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            {% for order in orders %}
+            <tr>
+              <td><strong>#{{ order.pk }}</strong></td>
+              <td>${{ order.total_price }}</td>
+              <td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+              <td><a href="{% url 'orders:order_detail' order.pk %}" class="btn btn-ghost btn-sm">View</a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:0.75rem;font-size:0.875rem"><a href="{% url 'orders:order_history' %}">See all orders →</a></p>
+      {% else %}
+      <p class="text-muted">No orders yet. <a href="{% url 'catalog:index' %}">Start shopping!</a></p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

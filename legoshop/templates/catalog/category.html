@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ category.name }} — LEGO Shop{% endblock %}
+{% block content %}
+
+<!-- CATEGORY HEADER -->
+<div style="background:var(--black);padding:3rem 2rem;">
+  <div class="container">
+    <div class="breadcrumb" style="margin-bottom:1rem">
+      <a href="{% url 'catalog:index' %}" style="color:rgba(255,255,255,0.4)">Catalog</a>
+      <span class="breadcrumb-sep" style="color:rgba(255,255,255,0.2)">›</span>
+      <span style="color:rgba(255,255,255,0.7)">{{ category.name }}</span>
+    </div>
+    <h1 style="font-size:2.5rem;font-weight:900;color:white;letter-spacing:-1px">{{ category.name }}</h1>
+    {% if category.description %}
+    <p style="color:rgba(255,255,255,0.45);margin-top:0.5rem;font-size:1rem">{{ category.description }}</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- CAT BAR -->
+<div class="cat-bar">
+  <a href="{% url 'catalog:index' %}" class="cat-tab">All Sets</a>
+  <a href="{% url 'catalog:category' category.slug %}" class="cat-tab active">{{ category.name }}</a>
+</div>
+
+<div class="container section">
+  <div class="section-header">
+    <div>
+      <div class="section-tag">{{ category.name }}</div>
+      <h2 class="section-title">{{ products.count }} Set{% if products.count != 1 %}s{% endif %}</h2>
+    </div>
+    <a href="{% url 'catalog:index' %}" class="btn btn-ghost">← All Categories</a>
+  </div>
+
+  {% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+      <a href="{{ product.get_absolute_url }}" style="display:contents">
+        <div class="product-img-wrap">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+          {% else %}
+            <div class="product-img-placeholder">🧱</div>
+          {% endif %}
+          {% if not product.is_in_stock %}<span class="product-badge">Sold Out</span>{% endif %}
+          {% if product.pieces > 5000 %}<span class="product-badge badge-dark">Ultimate</span>{% endif %}
+        </div>
+      </a>
+      <div class="product-body">
+        <div class="product-cat">{{ category.name }}</div>
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-meta">
+          <span>{{ product.pieces }} pcs</span>
+          <span>Age {{ product.age_min }}+</span>
+        </div>
+        <div class="product-footer">
+          <div class="product-price">${{ product.price }}</div>
+          {% if product.is_in_stock %}
+          <form method="post" action="{% url 'cart:add' product.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <input type="hidden" name="override" value="False">
+            <button type="submit" class="btn-add-cart" title="Add to cart">+</button>
+          </form>
+          {% else %}
+          <span class="chip chip-danger">Out of stock</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>No sets in this category yet</h3>
+    <p>Check back soon or browse all sets.</p>
+    <a href="{% url 'catalog:index' %}" class="btn btn-dark">Browse All</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

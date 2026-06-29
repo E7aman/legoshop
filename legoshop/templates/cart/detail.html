@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Your Cart — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Your Cart</h1>
+      <div class="page-header-sub">{{ cart_count }} item{% if cart_count != 1 %}s{% endif %} in your cart</div>
+    </div>
+    <a href="{% url 'catalog:index' %}" class="btn btn-ghost">← Continue Shopping</a>
+  </div>
+
+  {% if cart_count %}
+  <div class="cart-layout">
+    <div class="table-card">
+      {% for item in cart %}
+      <div class="cart-item">
+        <div class="cart-item-img">
+          {% if item.product.image %}<img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+          {% else %}<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;background:var(--surface)">🧱</div>{% endif %}
+        </div>
+        <div>
+          <div class="cart-item-name">{{ item.product.name }}</div>
+          <div class="cart-item-meta">{{ item.product.pieces }} pcs · Age {{ item.product.age_min }}+</div>
+          <div class="qty-control">
+            <form method="post" action="{% url 'cart:add' item.product.id %}" style="display:flex;align-items:center;gap:0.5rem">
+              {% csrf_token %}
+              {{ item.update_form.quantity }}
+              <input type="hidden" name="override" value="True">
+              <button type="submit" class="btn btn-ghost btn-sm">Update</button>
+            </form>
+            <form method="post" action="{% url 'cart:remove' item.product.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-ghost btn-sm" style="color:var(--red)">Remove</button>
+            </form>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:1.1rem;font-weight:800">${{ item.total_price }}</div>
+          <div style="font-size:0.8rem;color:var(--mid);margin-top:0.25rem">${{ item.price }} each</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="cart-summary-card">
+      <div class="cart-summary-head">Order Summary</div>
+      <div class="cart-summary-body">
+        {% for item in cart %}
+        <div class="cart-row">
+          <span style="color:var(--mid)">{{ item.product.name }} ×{{ item.quantity }}</span>
+          <span>${{ item.total_price }}</span>
+        </div>
+        {% endfor %}
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span>${{ cart.get_total_price }}</span>
+        </div>
+        {% if user.is_authenticated %}
+        <a href="{% url 'orders:checkout' %}" class="btn btn-dark btn-block btn-lg" style="margin-top:1.5rem">Checkout →</a>
+        {% else %}
+        <a href="{% url 'accounts:login' %}?next={% url 'orders:checkout' %}" class="btn btn-dark btn-block btn-lg" style="margin-top:1.5rem">Login to Checkout</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🛒</div>
+    <h3>Your cart is empty</h3>
+    <p>Add some LEGO sets to get started!</p>
+    <a href="{% url 'catalog:index' %}" class="btn btn-yellow btn-lg">Browse Catalog</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="breadcrumb">
+    <a href="{% url 'catalog:index' %}">Catalog</a>
+    <span class="breadcrumb-sep">›</span>
+    {% if product.category %}<a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a><span class="breadcrumb-sep">›</span>{% endif %}
+    <span>{{ product.name }}</span>
+  </div>
+
+  <div class="product-detail-grid">
+    <div class="product-detail-images">
+      <div class="product-main-img">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <div class="placeholder">🧱</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="product-detail-info">
+      {% if product.category %}<div class="product-detail-cat">{{ product.category.name }}</div>{% endif %}
+      <h1 class="product-detail-name">{{ product.name }}</h1>
+
+      {% if product.is_in_stock %}
+      <span class="stock-chip stock-in">● In Stock ({{ product.stock }} left)</span>
+      {% else %}
+      <span class="stock-chip stock-out">● Out of Stock</span>
+      {% endif %}
+
+      <div class="product-detail-price">${{ product.price }}</div>
+
+      <div class="product-specs-grid">
+        <div class="spec-cell">
+          <div class="spec-cell-label">Pieces</div>
+          <div class="spec-cell-value">{{ product.pieces }}</div>
+        </div>
+        <div class="spec-cell">
+          <div class="spec-cell-label">Age</div>
+          <div class="spec-cell-value">{{ product.age_min }}+</div>
+        </div>
+        <div class="spec-cell">
+          <div class="spec-cell-label">Category</div>
+          <div class="spec-cell-value">{{ product.category.name|default:"—" }}</div>
+        </div>
+        <div class="spec-cell">
+          <div class="spec-cell-label">Stock</div>
+          <div class="spec-cell-value">{{ product.stock }} units</div>
+        </div>
+      </div>
+
+      {% if product.description %}
+      <p class="product-desc">{{ product.description }}</p>
+      {% endif %}
+
+      <div class="product-detail-actions">
+        {% if product.is_in_stock %}
+        <form method="post" action="{% url 'cart:add' product.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="quantity" value="1">
+          <input type="hidden" name="override" value="False">
+          <button type="submit" class="btn btn-dark btn-lg">Add to Cart</button>
+        </form>
+        {% endif %}
+        <a href="{% url 'catalog:index' %}" class="btn btn-ghost btn-lg">← Back</a>
+        {% if user.is_shop_admin %}
+        <a href="{% url 'catalog:admin_product_edit' product.pk %}" class="btn btn-ghost btn-lg">Edit</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

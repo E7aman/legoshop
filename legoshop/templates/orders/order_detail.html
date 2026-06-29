@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.pk }} — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Order #{{ order.pk }}</h1>
+      <div class="page-header-sub">Placed on {{ order.created_at|date:"d F Y, H:i" }}</div>
+    </div>
+    <span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span>
+  </div>
+
+  <div class="cart-layout">
+    <div class="table-card">
+      <table>
+        <thead><tr><th>Product</th><th>Price</th><th>Qty</th><th style="text-align:right">Total</th></tr></thead>
+        <tbody>
+          {% for item in order.items.all %}
+          <tr>
+            <td><strong>{{ item.product_name }}</strong></td>
+            <td>${{ item.price }}</td>
+            <td>{{ item.quantity }}</td>
+            <td style="text-align:right;font-weight:700">${{ item.get_total_price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cart-summary-card">
+      <div class="cart-summary-head">Details</div>
+      <div class="cart-summary-body">
+        <div class="cart-row"><span class="text-muted">Status</span><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></div>
+        <div class="cart-row"><span class="text-muted">Date</span><span>{{ order.created_at|date:"d M Y" }}</span></div>
+        {% if order.note %}<div style="margin:0.75rem 0;font-size:0.85rem;color:var(--mid)"><strong>Note:</strong> {{ order.note }}</div>{% endif %}
+        <div style="margin-top:0.75rem;font-size:0.85rem;color:var(--mid)"><strong>Ship to:</strong><br>{{ order.shipping_address }}</div>
+        <div class="cart-total-row"><span>Total</span><span>${{ order.total_price }}</span></div>
+        <a href="{% url 'orders:order_history' %}" class="btn btn-ghost btn-block" style="margin-top:1rem">← All Orders</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Users — Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div><h1>Users</h1><div class="page-header-sub">{{ users.count }} total</div></div>
+  </div>
+  <div class="table-card">
+    <table>
+      <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Active</th><th>Joined</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.username }}</strong></td>
+          <td>{{ u.email|default:"—" }}</td>
+          <td><span class="chip {% if u.is_shop_admin %}chip-yellow{% else %}chip-blue{% endif %}">{{ u.get_role_display }}</span></td>
+          <td>{% if u.is_active %}<span class="chip chip-success">Active</span>{% else %}<span class="chip chip-danger">Inactive</span>{% endif %}</td>
+          <td>{{ u.date_joined|date:"d M Y" }}</td>
+          <td style="display:flex;gap:0.5rem">
+            <a href="{% url 'accounts:admin_user_edit' u.pk %}" class="btn btn-ghost btn-sm">Edit</a>
+            {% if u != request.user %}<a href="{% url 'accounts:admin_user_delete' u.pk %}" class="btn btn-danger btn-sm">Delete</a>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

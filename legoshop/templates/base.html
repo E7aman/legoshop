@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LEGO Shop{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<nav class="navbar">
+  <a class="navbar-brand" href="{% url 'catalog:index' %}">LEGO<span>Shop</span></a>
+
+  <ul class="navbar-links">
+    <li><a href="{% url 'catalog:index' %}">Catalog</a></li>
+    {% if user.is_authenticated and user.is_shop_admin %}
+    <li><a href="{% url 'catalog:admin_product_list' %}">Products</a></li>
+    <li><a href="{% url 'catalog:admin_category_list' %}">Categories</a></li>
+    <li><a href="{% url 'orders:admin_order_list' %}">Orders</a></li>
+    <li><a href="{% url 'accounts:admin_users' %}">Users</a></li>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <li><a href="{% url 'orders:order_history' %}">My Orders</a></li>
+    {% endif %}
+  </ul>
+
+  <div class="navbar-actions">
+    {% if user.is_authenticated %}
+    <a href="{% url 'accounts:profile' %}" class="btn-nav-user">{{ user.username }}</a>
+    <form method="post" action="{% url 'accounts:logout' %}" style="display:inline">
+      {% csrf_token %}
+      <button type="submit" class="btn-nav-user">Logout</button>
+    </form>
+    {% else %}
+    <a href="{% url 'accounts:login' %}" class="btn-nav-user">Login</a>
+    <a href="{% url 'accounts:register' %}" class="btn btn-yellow btn-sm">Register</a>
+    {% endif %}
+    <a href="{% url 'cart:detail' %}" class="btn-nav-cart">
+      Cart
+      {% if cart_count %}<span class="nav-count">{{ cart_count }}</span>{% endif %}
+    </a>
+  </div>
+</nav>
+
+{% if messages %}
+<div class="messages-wrap">
+  {% for message in messages %}
+  <div class="message {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">LEGO<span>Shop</span></div>
+      <p class="footer-desc">The best place to build your world, one brick at a time.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Shop</h4>
+      <ul>
+        <li><a href="{% url 'catalog:index' %}">All Sets</a></li>
+        <li><a href="{% url 'catalog:index' %}?category=city">City</a></li>
+        <li><a href="{% url 'catalog:index' %}?category=technic">Technic</a></li>
+        <li><a href="{% url 'catalog:index' %}?category=star-wars">Star Wars</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Account</h4>
+      <ul>
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'accounts:profile' %}">Profile</a></li>
+        <li><a href="{% url 'orders:order_history' %}">Orders</a></li>
+        {% else %}
+        <li><a href="{% url 'accounts:login' %}">Login</a></li>
+        <li><a href="{% url 'accounts:register' %}">Register</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Project</h4>
+      <ul>
+        <li><a href="#">Built with Django</a></li>
+        <li><a href="#">Pet project by NITRO</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 LEGOShop — A pet project built with Django &amp; love.</div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Checkout — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Checkout</h1>
+      <div class="page-header-sub">Almost there — just confirm your shipping details</div>
+    </div>
+  </div>
+
+  <div class="cart-layout">
+    <div class="form-card">
+      <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:1.5rem">Shipping Details</h2>
+      <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="form-group">
+          <label>{{ field.label }}</label>
+          {{ field }}
+          {% for error in field.errors %}<div class="form-error">{{ error }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        <div class="form-actions">
+          <button type="submit" class="btn btn-dark btn-lg">Place Order</button>
+          <a href="{% url 'cart:detail' %}" class="btn btn-ghost btn-lg">← Back to Cart</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="cart-summary-card">
+      <div class="cart-summary-head">Your Order</div>
+      <div class="cart-summary-body">
+        {% for item in cart %}
+        <div class="cart-row">
+          <span style="color:var(--mid)">{{ item.product.name }} ×{{ item.quantity }}</span>
+          <span>${{ item.total_price }}</span>
+        </div>
+        {% endfor %}
+        <div class="cart-total-row">
+          <span>Total</span>
+          <span>${{ cart.get_total_price }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

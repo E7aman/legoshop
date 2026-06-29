@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Categories — Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div><h1>Categories</h1></div>
+    <a href="{% url 'catalog:admin_category_create' %}" class="btn btn-dark">+ New Category</a>
+  </div>
+  <div class="table-card">
+    <table>
+      <thead><tr><th>Name</th><th>Slug</th><th>Products</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for cat in categories %}
+        <tr>
+          <td><strong>{{ cat.name }}</strong></td>
+          <td><code style="background:var(--surface);padding:2px 6px;border-radius:4px;font-size:0.8rem">{{ cat.slug }}</code></td>
+          <td>{{ cat.products.count }}</td>
+          <td style="display:flex;gap:0.5rem">
+            <a href="{% url 'catalog:admin_category_edit' cat.pk %}" class="btn btn-ghost btn-sm">Edit</a>
+            <a href="{% url 'catalog:admin_category_delete' cat.pk %}" class="btn btn-danger btn-sm">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted" style="padding:3rem">No categories yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

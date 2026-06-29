@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}All Orders — Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div><h1>All Orders</h1></div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+      <a href="{% url 'orders:admin_order_list' %}" class="btn {% if not current_status %}btn-dark{% else %}btn-ghost{% endif %} btn-sm">All</a>
+      {% for val, label in status_choices %}
+      <a href="?status={{ val }}" class="btn {% if current_status == val %}btn-dark{% else %}btn-ghost{% endif %} btn-sm">{{ label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="table-card">
+    <table>
+      <thead><tr><th>#</th><th>Customer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td><strong>#{{ order.pk }}</strong></td>
+          <td>{{ order.user.username }}</td>
+          <td>{{ order.created_at|date:"d M Y, H:i" }}</td>
+          <td>{{ order.items.count }}</td>
+          <td>${{ order.total_price }}</td>
+          <td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+          <td><a href="{% url 'orders:admin_order_detail' order.pk %}" class="btn btn-ghost btn-sm">Manage →</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-center text-muted" style="padding:3rem">No orders found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

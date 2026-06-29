@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}LEGO Shop — Build Your World{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">✦ New Sets Available</div>
+      <h1>Build Something<br><em>Legendary</em></h1>
+      <p class="hero-sub">From iconic Star Wars ships to sprawling city skylines — discover hundreds of sets for every builder, every age.</p>
+      <div class="hero-actions">
+        <a href="#catalog" class="btn btn-yellow btn-lg">Shop All Sets</a>
+        <a href="{% url 'catalog:index' %}?category=star-wars" class="btn btn-outline-white btn-lg">Star Wars Collection</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-value">500+</div>
+          <div class="hero-stat-label">Sets Available</div>
+        </div>
+        <div>
+          <div class="hero-stat-value">5</div>
+          <div class="hero-stat-label">Collections</div>
+        </div>
+        <div>
+          <div class="hero-stat-value">Free</div>
+          <div class="hero-stat-label">No payments needed</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="hero-card">
+        <img src="https://images.brickset.com/sets/images/75192-1.jpg" alt="Millennium Falcon" onerror="this.parentElement.innerHTML='<div class=\'hero-card-placeholder\'>🚀</div>'">
+      </div>
+      <div class="hero-card">
+        <img src="https://images.brickset.com/sets/images/10307-1.jpg" alt="Eiffel Tower" onerror="this.parentElement.innerHTML='<div class=\'hero-card-placeholder\'>🗼</div>'">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY TABS -->
+<div class="cat-bar">
+  <a href="{% url 'catalog:index' %}" class="cat-tab {% if not request.GET.category and not request.GET.q %}active{% endif %}">All Sets</a>
+  {% for cat in categories %}
+  <a href="{% url 'catalog:category' cat.slug %}" class="cat-tab">{{ cat.name }}</a>
+  {% endfor %}
+</div>
+
+<!-- MAIN CATALOG -->
+<div class="container section" id="catalog">
+
+  <!-- Filter bar -->
+  <form method="get" class="filter-wrap">
+    <div class="filter-group" style="flex:2">
+      <label>Search</label>
+      {{ form.q }}
+    </div>
+    <div class="filter-group">
+      <label>Category</label>
+      {{ form.category }}
+    </div>
+    <div class="filter-group" style="max-width:130px">
+      <label>Min $</label>
+      {{ form.min_price }}
+    </div>
+    <div class="filter-group" style="max-width:130px">
+      <label>Max $</label>
+      {{ form.max_price }}
+    </div>
+    <div style="display:flex;align-items:flex-end">
+      <button type="submit" class="btn btn-dark">Search</button>
+    </div>
+  </form>
+
+  <!-- Header row -->
+  <div class="section-header">
+    <div>
+      <div class="section-tag">Catalog</div>
+      <h2 class="section-title">
+        {% if request.GET.q %}"{{ request.GET.q }}"{% else %}All Sets{% endif %}
+      </h2>
+    </div>
+    <span class="text-muted" style="font-size:0.875rem">{{ products.count }} set{% if products.count != 1 %}s{% endif %} found</span>
+  </div>
+
+  <!-- Grid -->
+  {% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+      <a href="{{ product.get_absolute_url }}" style="display:contents">
+        <div class="product-img-wrap">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+          {% else %}
+            <div class="product-img-placeholder">🧱</div>
+          {% endif %}
+          {% if not product.is_in_stock %}<span class="product-badge">Sold Out</span>{% endif %}
+          {% if product.pieces > 5000 %}<span class="product-badge badge-dark">Ultimate</span>{% endif %}
+        </div>
+      </a>
+      <div class="product-body">
+        {% if product.category %}<div class="product-cat">{{ product.category.name }}</div>{% endif %}
+        <div class="product-name">{{ product.name }}</div>
+        <div class="product-meta">
+          <span>{{ product.pieces }} pcs</span>
+          <span>Age {{ product.age_min }}+</span>
+        </div>
+        <div class="product-footer">
+          <div class="product-price">${{ product.price }}</div>
+          {% if product.is_in_stock %}
+          <form method="post" action="{% url 'cart:add' product.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="quantity" value="1">
+            <input type="hidden" name="override" value="False">
+            <button type="submit" class="btn-add-cart" title="Add to cart">+</button>
+          </form>
+          {% else %}
+          <span class="chip chip-danger">Out of stock</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h3>No sets found</h3>
+    <p>Try different search terms or browse all categories.</p>
+    <a href="{% url 'catalog:index' %}" class="btn btn-dark">Clear filters</a>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

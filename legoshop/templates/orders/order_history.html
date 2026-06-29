@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}My Orders — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div><h1>My Orders</h1><div class="page-header-sub">{{ orders.count }} order{% if orders.count != 1 %}s{% endif %} total</div></div>
+  </div>
+  {% if orders %}
+  <div class="table-card">
+    <table>
+      <thead><tr><th>Order</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td><strong>#{{ order.pk }}</strong></td>
+          <td>{{ order.created_at|date:"d M Y" }}</td>
+          <td>{{ order.items.count }}</td>
+          <td>${{ order.total_price }}</td>
+          <td><span class="status-pill status-{{ order.status }}">{{ order.get_status_display }}</span></td>
+          <td><a href="{% url 'orders:order_detail' order.pk %}" class="btn btn-ghost btn-sm">View →</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📦</div>
+    <h3>No orders yet</h3>
+    <p>Your order history will appear here.</p>
+    <a href="{% url 'catalog:index' %}" class="btn btn-yellow btn-lg">Start Shopping</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

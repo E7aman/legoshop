@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Order #{{ order.pk }} — Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Order #{{ order.pk }}</h1>
+      <div class="page-header-sub">{{ order.user.username }} · {{ order.created_at|date:"d F Y, H:i" }}</div>
+    </div>
+    <a href="{% url 'orders:admin_order_list' %}" class="btn btn-ghost">← All Orders</a>
+  </div>
+
+  <div class="cart-layout">
+    <div>
+      <div class="table-card mb-2">
+        <table>
+          <thead><tr><th>Product</th><th>Price</th><th>Qty</th><th style="text-align:right">Total</th></tr></thead>
+          <tbody>
+            {% for item in order.items.all %}
+            <tr>
+              <td><strong>{{ item.product_name }}</strong></td>
+              <td>${{ item.price }}</td>
+              <td>{{ item.quantity }}</td>
+              <td style="text-align:right;font-weight:700">${{ item.get_total_price }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="form-card">
+        <h3 style="font-size:0.9rem;font-weight:700;margin-bottom:0.75rem">Shipping Address</h3>
+        <p style="color:var(--mid);font-size:0.9rem;white-space:pre-line">{{ order.shipping_address }}</p>
+        {% if order.note %}<h3 style="font-size:0.9rem;font-weight:700;margin:1rem 0 0.5rem">Customer Note</h3><p style="color:var(--mid);font-size:0.9rem">{{ order.note }}</p>{% endif %}
+      </div>
+    </div>
+
+    <div class="cart-summary-card">
+      <div class="cart-summary-head">Order Management</div>
+      <div class="cart-summary-body">
+        <div class="cart-row"><span class="text-muted">Customer</span><strong>{{ order.user.username }}</strong></div>
+        <div class="cart-row"><span class="text-muted">Email</span>{{ order.user.email|default:"—" }}</div>
+        <div class="cart-row"><span class="text-muted">Date</span>{{ order.created_at|date:"d M Y" }}</div>
+        <div class="cart-total-row"><span>Total</span><span>${{ order.total_price }}</span></div>
+        <form method="post" style="margin-top:1.5rem">
+          {% csrf_token %}
+          <div class="form-group"><label>Update Status</label>{{ form.status }}</div>
+          <button type="submit" class="btn btn-dark btn-block">Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
