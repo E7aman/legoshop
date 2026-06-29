@@ -85,3 +85,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+STATIC_URL = 'static/'
+
+# Вот этой строки у тебя скорее всего нет, или она закомментирована:
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Если у тебя есть папки со статикой внутри приложений, оставь это:
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # или как там у тебя называется общая папка статики
+]
