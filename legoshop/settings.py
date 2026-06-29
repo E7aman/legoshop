@@ -4,9 +4,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-lego-shop-change-this-in-production-abc123'
 
-DEBUG = True
+# Переключаем в False, чтобы Django понимал, что он на сервере
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+# Разрешаем твоему домену на Render открывать этот сайт
+ALLOWED_HOSTS = ['legoshop-dwix.onrender.com', 'localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -95,3 +97,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # или как там у тебя называется общая папка статики
 ]
+
+# Насильно заставляем WhiteNoise работать даже при DEBUG = False
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
