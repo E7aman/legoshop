@@ -15,6 +15,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
+    'cloudinary',
     'django.contrib.staticfiles',
     # Our apps
     'legoshop.accounts',
@@ -99,3 +101,15 @@ STATICFILES_DIRS = [
 # Включаем WhiteNoise на максимум
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 WHITENOISE_USE_FINDERS = True
+
+import os
+
+# Настройки Cloudinary
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
+
+# Говорим Django отправлять все загружаемые файлы в облако
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
