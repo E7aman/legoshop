@@ -99,7 +99,8 @@ STATICFILES_DIRS = [
 ]
 
 # Включаем WhiteNoise на максимум
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Вместо старой строчки с whitenoise.storage... пишем эту:
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 WHITENOISE_USE_FINDERS = True
 
 import os
