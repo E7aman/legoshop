@@ -105,11 +105,10 @@ WHITENOISE_USE_FINDERS = True
 
 import os
 
-# Настройки Cloudinary
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
-    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
-    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+    'CLOUD_NAME': 'yboy5zkr',
+    'API_KEY': '477542414761553',
+    'API_SECRET': '4t06mr_jSZv3iE04GxrcCbY_1og',
 }
 
 # Говорим Django отправлять все загружаемые файлы в облако
