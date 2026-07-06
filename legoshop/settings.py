@@ -10,6 +10,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    "unfold",  # <-- Unfold ВСЕГДА первый
+    "unfold.contrib.filters",  # (Опционально) для красивых фильтров в админке
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

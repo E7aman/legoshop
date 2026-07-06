@@ -1,6 +1,13 @@
 from django.contrib import admin
 from .models import Order, OrderItem
 
+from django.contrib import admin
+from unfold.admin import ModelAdmin
+from .models import LegoSet
+
+@admin.register(LegoSet)
+class LegoSetAdmin(ModelAdmin):  # Наследуемся от Unfold
+    list_display = ['name', 'price', 'stock']
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem

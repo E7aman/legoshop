@@ -1,6 +1,13 @@
 from django.contrib import admin
 from .models import Category, Product
 
+from django.contrib import admin
+from unfold.admin import ModelAdmin
+from .models import LegoSet
+
+@admin.register(LegoSet)
+class LegoSetAdmin(ModelAdmin):  # Наследуемся от Unfold
+    list_display = ['name', 'price', 'stock']
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
