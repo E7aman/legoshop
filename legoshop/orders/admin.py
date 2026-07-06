@@ -1,22 +1,16 @@
 from django.contrib import admin
-from .models import Order, OrderItem
+from unfold.admin import ModelAdmin, TabularInline
+from .models import Order, OrderItem  # Импортируем твои настоящие модели
 
-from django.contrib import admin
-from unfold.admin import ModelAdmin
-from .models import LegoSet
 
-@admin.register(LegoSet)
-class LegoSetAdmin(ModelAdmin):  # Наследуемся от Unfold
-    list_display = ['name', 'price', 'stock']
-
-class OrderItemInline(admin.TabularInline):
+class OrderItemInline(TabularInline):  # Наследуемся от TabularInline из unfold
     model = OrderItem
     extra = 0
-    readonly_fields = ('product_name', 'price', 'quantity')
+    readonly_fields = ("product_name", "price", "quantity")
 
 
 @admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'status', 'total_price', 'created_at')
-    list_filter = ('status',)
+class OrderAdmin(ModelAdmin):  # Наследуемся от ModelAdmin из unfold
+    list_display = ("id", "user", "status", "total_price", "created_at")
+    list_filter = ("status",)
     inlines = [OrderItemInline]
