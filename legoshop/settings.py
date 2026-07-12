@@ -102,7 +102,7 @@ STATICFILES_DIRS = [
 
 # Включаем WhiteNoise на максимум
 # Вместо старой строчки с whitenoise.storage... пишем эту:
-WHITENOISE_USE_FINDERS = True
+WHITENOISE_MANIFEST_STRICT = False
 
 import os
 
@@ -118,9 +118,9 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage", # Убрали Manifest, чтобы не было конфликтов с кэшем
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
 # Явно прописываем эту строчку, чтобы обмануть старый код django-cloudinary-storage!
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
