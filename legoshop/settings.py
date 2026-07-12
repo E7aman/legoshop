@@ -112,11 +112,15 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': '4t06mr_jSZv3iE04GxrcCbY_1og',
 }
 
+# Заменяем старый блок STORAGES на этот рабочий вариант:
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage", # Убрали Manifest, чтобы не было конфликтов с кэшем
     },
 }
+
+# Явно прописываем эту строчку, чтобы обмануть старый код django-cloudinary-storage!
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
