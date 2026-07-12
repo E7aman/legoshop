@@ -86,7 +86,6 @@ USE_I18N = True
 USE_TZ = True
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -103,7 +102,6 @@ STATICFILES_DIRS = [
 
 # Включаем WhiteNoise на максимум
 # Вместо старой строчки с whitenoise.storage... пишем эту:
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 WHITENOISE_USE_FINDERS = True
 
 import os
@@ -114,5 +112,11 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': '4t06mr_jSZv3iE04GxrcCbY_1og',
 }
 
-# Говорим Django отправлять все загружаемые файлы в облако
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
