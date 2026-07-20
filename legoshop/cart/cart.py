@@ -38,11 +38,15 @@ class Cart:
     def __iter__(self):
         product_ids = self.cart.keys()
         products = Product.objects.filter(id__in=product_ids)
-        cart = self.cart.copy()
-        for product in products:
-            cart[str(product.id)]['product'] = product
-        for item in cart.values():
-            item['price'] = Decimal(item['price'])
+        # Делаем глубокую копию или создаем чистый словарь,
+        # чтобы данные в self.cart (которые сидят в сессии) НЕ загрязнять объектами Decimal/Model
+        product_map = {str(p.id): p for p in products}
+
+        for product_id, item_data in self.cart.items():
+            # Создаем новый словарь для шаблонов/циклов
+            item = item_data.copy()
+            item['product'] = product_map.get(product_id)
+            item['price'] = Decimal(item_data['price'])
             item['total_price'] = item['price'] * item['quantity']
             yield item
 
