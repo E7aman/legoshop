@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Payment — LEGO Shop{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>Payment</h1>
+      <div class="page-header-sub">Order #{{ order.pk }} — ${{ order.total_price }}</div>
+    </div>
+  </div>
+
+  <div class="form-card" style="max-width:480px">
+    <form id="payment-form">
+      {% csrf_token %}
+      <div id="payment-element"></div>
+      <div id="payment-message" class="form-error" style="margin-top:1rem;display:none"></div>
+      <div class="form-actions">
+        <button id="submit-btn" class="btn btn-dark btn-lg" type="submit">Pay ${{ order.total_price }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe("{{ stripe_publishable_key }}");
+  const clientSecret = "{{ client_secret }}";
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+  const elements = stripe.elements({ clientSecret });
+  const paymentElement = elements.create('payment');
+  paymentElement.mount('#payment-element');
+
+  const form = document.getElementById('payment-form');
+  const submitBtn = document.getElementById('submit-btn');
+  const messageBox = document.getElementById('payment-message');
+
+  function showMessage(text) {
+    messageBox.textContent = text;
+    messageBox.style.display = 'block';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing…';
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: { return_url: window.location.href },
+      redirect: 'if_required',
+    });
+
+    if (error) {
+      showMessage(error.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Pay ${{ order.total_price }}';
+      return;
+    }
+
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
+      const resp = await fetch("{% url 'orders:payment_success' order.pk %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrfToken },
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        window.location.href = data.redirect_url;
+      } else {
+        showMessage('Payment succeeded but confirmation failed — contact support.');
+      }
+    }
+  });
+</script>
+{% endblock %}

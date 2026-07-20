@@ -18,8 +18,20 @@ class Order(models.Model):
         (STATUS_CANCELLED, 'Cancelled'),
     ]
 
+    PAYMENT_UNPAID = 'unpaid'
+    PAYMENT_PAID = 'paid'
+    PAYMENT_FAILED = 'failed'
+
+    PAYMENT_STATUS_CHOICES = [
+        (PAYMENT_UNPAID, 'Unpaid'),
+        (PAYMENT_PAID, 'Paid'),
+        (PAYMENT_FAILED, 'Failed'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_UNPAID)
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
     shipping_address = models.TextField()
     note = models.TextField(blank=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -42,7 +54,7 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
-    product_name = models.CharField(max_length=200)  # snapshot in case product deleted
+    product_name = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField()
 
